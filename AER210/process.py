@@ -5,11 +5,7 @@ import numpy as np
 
 def ingest_data(data_file, x_ind, y_ind, y_base, scale_factor, exposure_time, exposure_time_error, measurement_error):
     """
-    Reads in the from csv file and returns a list of tuples of form [Δy, length]
-    where:
-        Δy is the absolute distance between the height of the streak and the base
-            of the channel (y_base)
-        length is the length of the streak
+    Reads in data from the csv file and returns a pandas Dataframe with d_y vs velocity data -- with error!
     Args:
         data_file: the csv file containing the data. This should be formatted as follows:
             x1a, y1a
