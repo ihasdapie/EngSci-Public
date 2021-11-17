@@ -3,9 +3,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 def ingest_data(data_file, x_ind, y_ind, y_base, scale_factor, exposure_time, exposure_time_error, measurement_error):
     """
-    Reads in data from the csv file and returns a pandas Dataframe with d_y vs velocity data -- with error!
+    Reads in the from csv file and returns a list of tuples of form [Δy, length]
+    where:
+        Δy is the absolute distance between the height of the streak and the base
+            of the channel (y_base)
+        length is the length of the streak
     Args:
         data_file: the csv file containing the data. This should be formatted as follows:
             x1a, y1a
@@ -48,7 +53,7 @@ def ingest_data(data_file, x_ind, y_ind, y_base, scale_factor, exposure_time, ex
 
 
 
-def runner(data_file, x_ind, y_ind, scale_factor, exposure_time, exposure_time_error, measurement_error):
+def runner(data_file, x_ind, y_ind, xlabel, ylabel, scale_factor, exposure_time, exposure_time_error, measurement_error):
     data = ingest_data(data_file, x_ind, y_ind, y_base, scale_factor, exposure_time, exposure_time_error, measurement_error)
     print(data)
     # take a quadratic fit
@@ -58,23 +63,27 @@ def runner(data_file, x_ind, y_ind, scale_factor, exposure_time, exposure_time_e
 
     p1 = plt.errorbar(data.velocity, data.d_y, xerr=data.err_velocity, yerr = data.err_y, fmt='o', label="Velocity data")
     p2 = plt.plot(fn(xs), xs, label=f"fit: x = {fit[0]:.4f}y^2 + {fit[1]:.4f}y + {fit[2]:.4f}")
-    plt.xlabel('Velocity (um/s)')
-    plt.ylabel('Distance from base (um)')
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
     plt.legend()
     plt.title("Velocity Profile")
     plt.show()
 
 
 if __name__ == '__main__':
-    data_file = 'data/straight/straight-p1-10x-25.5-12+-0.5cm-DATA.csv'
+    # data_file = 'data/straight/straight-p1-10x-25.5-12+-0.5cm-DATA.csv'
+    data_file = 'data/size/rect12.9-2-DATA.csv'
     x_ind = 1
     y_ind = 2
     y_base = 200
-    scale_factor = 2.155 # pixels -> desired unit (um)
+    scale_factor = 1/2.155 # pixels -> desired unit (um)
     exposure_time = 25.5 # ms
     exposure_time_error = 0.1
     measurement_error = 5
-    runner(data_file, x_ind, y_ind, scale_factor, exposure_time, exposure_time_error, measurement_error)
+    xlabel = 'Velocity (μm/ms)'
+    ylabel = 'Distance from reference channel wall (μm)'
+    plt.style.use('seaborn')
+    runner(data_file, x_ind, y_ind, xlabel, ylabel, scale_factor, exposure_time, exposure_time_error, measurement_error)
 
 
 
